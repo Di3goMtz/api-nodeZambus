@@ -1,9 +1,13 @@
 const mongoose = require('mongoose');
 
 const StopSchema = new mongoose.Schema({
-  nombre: String,
-  ubicacion: { latitud: Number, longitud: Number },
-  rutas: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Route' }]
+  name: { type: String, required: true },
+  latitude: { type: Number, required: true },
+  longitude: { type: Number, required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  reasonForDeletion: { type: String },
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model('Stop', StopSchema);

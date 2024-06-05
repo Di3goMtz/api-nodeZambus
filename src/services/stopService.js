@@ -1,22 +1,47 @@
 const Stop = require('../models/Stop');
 
-exports.getAllStops = async function() {
-  return await Stop.find({});
+exports.getAllStops = async (req, res) => {
+  try {
+    const stops = await Stop.find();
+    res.json(stops);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
-exports.getStopById = async function(id) {
-  return await Stop.findById(id);
+exports.getStopById = async (req, res) => {
+  try {
+    const stop = await Stop.findById(req.params.id);
+    res.json(stop);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
-exports.createStop = async function(stopData) {
-  const newStop = new Stop(stopData);
-  return await newStop.save();
+exports.createStop = async (req, res) => {
+  const newStop = new Stop(req.body);
+  try {
+    const stop = await newStop.save();
+    res.status(201).json(stop);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
-exports.updateStop = async function(id, stopData) {
-  return await Stop.findByIdAndUpdate(id, stopData, { new: true });
+exports.updateStop = async (req, res) => {
+  try {
+    const stop = await Stop.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(stop);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
-exports.deleteStop = async function(id) {
-  return await Stop.findByIdAndRemove(id);
+exports.deleteStop = async (req, res) => {
+  try {
+    await Stop.findByIdAndDelete(req.params.id);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };

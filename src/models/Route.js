@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 
 const RouteSchema = new mongoose.Schema({
-  nombre: String,
-  puntos: [{ latitud: Number, longitud: Number }],
-  busNumber: String,
-  stops: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Stop' }]
+  id: { type: Number, required: true, unique: true },
+  nombre: { type: String, required: true },
+  puntos: [{
+    latitud: { type: Number, required: true },
+    longitud: { type: Number, required: true }
+  }]
 });
 
 module.exports = mongoose.model('Route', RouteSchema);

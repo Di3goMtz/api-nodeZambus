@@ -1,50 +1,47 @@
 const User = require('../models/User');
 
-async function getNextId(User) {
-  const highestId = await User.find().sort({id: -1}).limit(1).exec();
-  let nextId = 1;
-  if(highestId.length > 0) {
-      nextId = highestId[0].id + 1;
-  }
-  return nextId;
-};
-
-async function insertWithIntegerId(document) {
-  document.id = await getNextId(User);
-  return await document.save();
-};
-
-exports.getAllUsers = async function() {
-  return await User.find({});
-};
-
-exports.getUserById = async function(id) {
-  return await User.findById(id);
-};
-
-exports.addUser = async function(userData) {
-  const newUser = new User({
-    nombre: userData.nombre,
-    apellido: userData.apellido,
-    tipoUsuario: userData.tipoUsuario,
-    email: userData.email,
-    password: userData.password
-  });
-
+exports.getAllUsers = async (req, res) => {
   try {
-    newUser._id = await getNextId(User); 
-    const savedUser = await newUser.save();
-    return savedUser;
+    const users = await User.find();
+    res.json(users);
   } catch (err) {
-    throw err;
+    res.status(500).send(err);
   }
 };
 
-
-exports.updateUser = async function(id, userData) {
-  return await User.findByIdAndUpdate(id, userData, { new: true });
+exports.getUserById = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.json(user);
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
-exports.deleteUser = async function(id) {
-  return await User.findByIdAndRemove(id);
+exports.createUser = async (req, res) => {
+  const newUser = new User(req.body);
+  try {
+    const user = await newUser.save();
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(user);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.status(204).send();
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
