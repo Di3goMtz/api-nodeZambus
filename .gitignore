@@ -28,21 +28,6 @@ coverage/
 # Bower dependency directory (https://bower.io/)
 bower_components/
 
-# Dotenv environment variables file
-.env
-
-# dotenv environment variables file for local development
-.env.local
-
-# dotenv environment variables file for development
-.env.development.local
-
-# dotenv environment variables file for test
-.env.test.local
-
-# dotenv environment variables file for production
-.env.production.local
-
 # Misc
 .DS_Store
 Thumbs.db
