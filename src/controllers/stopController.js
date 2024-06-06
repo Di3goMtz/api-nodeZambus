@@ -13,8 +13,23 @@ exports.createStop = async (req, res) => {
 
 exports.getStops = async (req, res) => {
   try {
-    const stops = await Stop.find();
-    res.json(stops);
+    const busStops = await Stop.find({});
+    res.json(busStops);
+  } catch (error) {
+    console.error('Server error fetching bus stops:', error);
+    res.status(500).json({ error: 'Error fetching bus stops' });
+  }
+};
+
+exports.getStopById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const stop = await Stop.findById(id);
+    if (stop) {
+      res.json(stop);
+    } else {
+      res.status(404).json({ error: 'Stop not found' });
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -23,12 +38,21 @@ exports.getStops = async (req, res) => {
 exports.updateStop = async (req, res) => {
   const { id } = req.params;
   const { name, latitude, longitude } = req.body;
+  
+  const userId = req.user._id;
+
   try {
     const stop = await Stop.findById(id);
     if (stop) {
       stop.name = name || stop.name;
       stop.latitude = latitude || stop.latitude;
       stop.longitude = longitude || stop.longitude;
+
+      stop.modificadoPor = {
+        userId,
+        motivo: 'Modificación de la parada',
+      };
+
       await stop.save();
       res.json(stop);
     } else {
