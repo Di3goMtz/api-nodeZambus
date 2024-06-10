@@ -46,16 +46,21 @@ exports.getStopById = async (req, res) => {
 exports.updateStop = async (req, res) => {
   const { id } = req.params;
   const { nombre, latitud, longitud } = req.body;
-  
   try {
-    const stop = await Stop.findById(id);
-    if (stop) {
-      stop.nombre = nombre || stop.nombre;
-      stop.ubicacion.latitud = latitud || stop.ubicacion.latitud;
-      stop.ubicacion.longitud = longitud || stop.ubicacion.longitud;
+    const updatedStop = await Stop.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          nombre: nombre,
+          'ubicacion.latitud': latitud,
+          'ubicacion.longitud': longitud,
+        },
+      },
+      { new: true, runValidators: true } // new: true para devolver el documento actualizado, runValidators: true para validar el esquema
+    );
 
-      await stop.save();
-      res.json(stop);
+    if (updatedStop) {
+      res.json(updatedStop);
     } else {
       res.status(404).json({ error: 'Stop not found' });
     }
@@ -63,6 +68,7 @@ exports.updateStop = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 exports.deleteStop = async (req, res) => {
   const { id } = req.params;
