@@ -1,11 +1,19 @@
 const Stop = require('../models/Stop');
+const jwt = require('jsonwebtoken');
 
 exports.createStop = async (req, res) => {
-  const { name, latitude, longitude } = req.body;
+  const { nombre, latitud, longitud } = req.body;
   try {
-    const stop = new Stop({ name, latitude, longitude, createdBy: req.user._id });
+    const stop = new Stop({
+      nombre,
+      ubicacion: {
+        latitud,
+        longitud
+      },
+      creadaPor: req.user._id
+    });
     await stop.save();
-    res.status(201).json(stop);
+    res.status(201).json({ stop});
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -37,21 +45,14 @@ exports.getStopById = async (req, res) => {
 
 exports.updateStop = async (req, res) => {
   const { id } = req.params;
-  const { name, latitude, longitude } = req.body;
+  const { nombre, latitud, longitud } = req.body;
   
-  const userId = req.user._id;
-
   try {
     const stop = await Stop.findById(id);
     if (stop) {
-      stop.name = name || stop.name;
-      stop.latitude = latitude || stop.latitude;
-      stop.longitude = longitude || stop.longitude;
-
-      stop.modificadoPor = {
-        userId,
-        motivo: 'Modificación de la parada',
-      };
+      stop.nombre = nombre || stop.nombre;
+      stop.ubicacion.latitud = latitud || stop.ubicacion.latitud;
+      stop.ubicacion.longitud = longitud || stop.ubicacion.longitud;
 
       await stop.save();
       res.json(stop);
@@ -65,12 +66,9 @@ exports.updateStop = async (req, res) => {
 
 exports.deleteStop = async (req, res) => {
   const { id } = req.params;
-  const { reason } = req.body;
   try {
-    const stop = await Stop.findById(id);
+    const stop = await Stop.findByIdAndDelete(id);
     if (stop) {
-      stop.reasonForDeletion = reason;
-      await stop.remove();
       res.json({ message: 'Stop removed' });
     } else {
       res.status(404).json({ error: 'Stop not found' });

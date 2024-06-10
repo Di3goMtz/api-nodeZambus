@@ -6,6 +6,7 @@ const router = express.Router();
 router.get('/', getStops);
 router.get('/:id', getStopById);
 router.route('/').post(protect, createStop).get(getStops);
-router.route('/update/:id').put(protect, updateStop).delete(protect, deleteStop);
+router.route('/update/:id').put(updateStop)
+router.delete('/delete/:id', deleteStop);
 
 module.exports = router;

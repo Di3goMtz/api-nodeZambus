@@ -1,13 +1,18 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const StopSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  latitude: { type: Number, required: true },
-  longitude: { type: Number, required: true },
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  reasonForDeletion: { type: String },
+  _id: { type: Number }, // Define el _id como un número
+  nombre: { type: String, required: true },
+  ubicacion: {
+    latitud: { type: Number, required: true },
+    longitud: { type: Number, required: true },
+  },
+  creadaPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, {
   timestamps: true
 });
+
+StopSchema.plugin(autoIncrement, { inc_field: '_id' });
 
 module.exports = mongoose.model('Stop', StopSchema);
