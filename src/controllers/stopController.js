@@ -69,7 +69,6 @@ exports.updateStop = async (req, res) => {
   }
 };
 
-
 exports.deleteStop = async (req, res) => {
   const { id } = req.params;
   try {
